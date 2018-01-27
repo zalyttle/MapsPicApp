@@ -57,7 +57,6 @@
 </head>
 
 
-
 <body>
   <div class="container">
     <h1>Show Location of Pictures</h1>
@@ -70,9 +69,22 @@
     </p>
     [search bar here if time]
   </div>
-
   <div id="map"></div>
 
+
+  <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyCYtF1gZZ-MsO3U8kSetj5rNJY7Zhj1v-o",
+      authDomain: "mapspicapp-61240.firebaseapp.com",
+      databaseURL: "https://mapspicapp-61240.firebaseio.com",
+      projectId: "mapspicapp-61240",
+      storageBucket: "mapspicapp-61240.appspot.com",
+      messagingSenderId: "1095635467477"
+    };
+    firebase.initializeApp(config);
+  </script>
 
   <script>
     var map;
@@ -231,12 +243,12 @@
     // This function populates the infowindow when the NEW marker is clicked after being saved. We'll only allow
     function populateFinalInfoWindow(marker, infowindow) {
       // Check to make sure the infowindow is not already opened on this marker.
-        infowindow.open(map, marker);
-        // Make sure the marker property is cleared if the infowindow is closed.
-        infowindow.addListener('closeclick', function () {
-          infowindow.marker = null;
-        });
-      }
+      infowindow.open(map, marker);
+      // Make sure the marker property is cleared if the infowindow is closed.
+      infowindow.addListener('closeclick', function () {
+        infowindow.marker = null;
+      });
+    }
 
     // This function will loop through the markers array and display them all.
     function showListings() {
