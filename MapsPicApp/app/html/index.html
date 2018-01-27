@@ -138,15 +138,13 @@
         var initializedCount = 0;
         var newLargeInfowindow;
 
-        console.log('placeMarker ran ');
+        console.log('placeMarker ran :) ');
 
         marker.addListener('click', function () {
-
-          console.log('initializedCount ', initializedCount);
+          console.log('initializedCount within listener for new marker being clicked ', initializedCount);
           if (initializedCount == 0) {
-            console.log('gonna run ');
             populateNewInfoWindow(this, largeInfowindow);
-            console.log('ran ');
+            console.log('ran populateNewInfoWindow() ');
 
 
             //ZL: Needs to be here so that Submit buttton works
@@ -160,11 +158,6 @@
               var postMessage = document.getElementById('formMessage');
               var postImage = document.getElementById('fileInput');
 
-              console.log('maybe postName value ', postName.value);
-              console.log('maybe marker ', marker);
-              console.log('maybe infowindow ', largeInfowindow);
-
-
               //Closes markers open infowindow
               largeInfowindow.close(map, marker);
               //Sets markers infowindow to NEW content
@@ -175,13 +168,12 @@
                 largeInfowindow.marker = null;
               });
 
-              console.log('largeInfowindow before NLIW ', largeInfowindow);
+              console.log('largeInfowindow after new content is set ', largeInfowindow);
               newLargeInfowindow = largeInfowindow;
-              console.log('newLargeInfowindow after made equal ', newLargeInfowindow);
+              console.log('newLargeInfowindow after made equal to largeInfoWindow ', newLargeInfowindow);
 
               // Push the marker to our array of markers.
-              console.log('actual marker ', marker);
-              console.log('markers 1 ', markers);
+              console.log('actual marker ', marker, ' AND markers array before new marker is pushed ', markers);
               markers.push(marker);
               console.log('markers 2 ', markers);
 
@@ -197,7 +189,6 @@
 
         });
       }
-
 
       //ZL: This is where the html buttons are told what JS functions to run when 'clicked'
       document.getElementById('show-listings').addEventListener('click', showListings);
@@ -237,9 +228,7 @@
       }
     }
 
-    // This function populates the infowindow when the marker is clicked. We'll only allow
-    // one infowindow which will open at the marker that is clicked, and populate based
-    // on that markers position.
+    // This function populates the infowindow when the NEW marker is clicked after being saved. We'll only allow
     function populateFinalInfoWindow(marker, infowindow) {
       // Check to make sure the infowindow is not already opened on this marker.
         infowindow.open(map, marker);
