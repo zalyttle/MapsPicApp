@@ -72,6 +72,9 @@
   <div id="map"></div>
 
 
+  <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
   <script>
     // Initialize Firebase
@@ -91,6 +94,17 @@
 
     // Create a new blank array for all the listing markers.
     var markers = [];
+    var locations = [];
+    var largeInfowindow;
+
+    function Marker(name, location, latitude, longitude, message, imageURL){
+        this.name = name;
+        this.location = location;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.message = message;
+        this.imageURL = imageURL;
+    }
 
     function initMap() {
       // Constructor creates a new map - only center and zoom are required.
@@ -102,50 +116,71 @@
 
       // These are the real estate listings that will be shown to the user.
       // Normally we'd have these in a database instead.
-      var locations = [
+      /*var locations = [
         { title: 'Park Ave Penthouse', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7713024, lng: -73.9632393 } },
         { title: 'Chelsea Loft', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7444883, lng: -73.9949465 } },
         { title: 'Union Square Open Floor Plan', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7347062, lng: -73.9895759 } },
         { title: 'East Village Hip Studio', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7281777, lng: -73.984377 } },
         { title: 'TriBeCa Artsy Bachelor Pad', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7195264, lng: -74.0089934 } },
         { title: 'Chinatown Homey Space', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7180628, lng: -73.9961237 } }
-      ];
+      ];*/
 
-      var largeInfowindow = new google.maps.InfoWindow();
-
-      // The following group uses the location array to create an array of markers on initialize.
-      for (var i = 0; i < locations.length; i++) {
-        // Get the position from the location array.
-        var position = locations[i].location;
-        var title = locations[i].title;
-        // Create a marker per location, and put into markers array.
-        //ZL: CODE TO CREATE MARKER
-        var marker = new google.maps.Marker({
-          position: position,
-          title: title,
-          animation: google.maps.Animation.DROP,
-          id: i
+      largeInfowindow = new google.maps.InfoWindow();
+        
+        // Get a reference to the database service
+        var database = firebase.database();
+        
+        // Get reference to 'markers' branch of database
+        var markerRef = database.ref('markers');
+        // Listener on markers branch
+        markerRef.on('value', function(snapshot) {
+          var i = 0;
+          snapshot.forEach(function(childSnapshot){
+              // Read each child
+              var name = childSnapshot.val().name;
+              var location = childSnapshot.val().location;
+              var latitude = childSnapshot.val().latitude;
+              var longitude = childSnapshot.val().longitude;
+              var message = childSnapshot.val().message;
+              var imageURL = childSnapshot.val().imageURL;
+              // Create new marker object
+              var marker = new Marker(name, location, latitude, longitude, message, imageURL);
+              console.log(marker);
+             
+              // If this marker isn't already in the locations array, add it
+              if (!locations.includes(marker)){
+                  locations.push(marker);
+                  
+                  // Drop a pin
+                  var marker = new google.maps.Marker({
+                      position: {lat: latitude, lng: longitude},
+                      title: name,
+                      animation: google.maps.Animation.DROP,
+                      id: i
+                  });
+                  // Save the marker
+                  markers.push(marker);
+                  i++;
+                      
+                  // Create an onclick event to open an infowindow at each marker.
+                  marker.addListener('click', function () {
+                    populateInfoWindow(this, largeInfowindow);
+                  });
+              }
+          });
         });
-
-        // Push the marker to our array of markers.
-        markers.push(marker);
-
-        // Create an onclick event to open an infowindow at each marker.
-        marker.addListener('click', function () {
-          populateInfoWindow(this, largeInfowindow);
-        });
-      }
 
       //function to add NEW marker on left click
       google.maps.event.addListener(map, 'click', function (event) {
         placeMarker(event.latLng);
       });
-
+    }
+      
       function placeMarker(location) {
         var marker = new google.maps.Marker({
           position: location,
           animation: google.maps.Animation.DROP,
-          map: map
+          map: map,
         });
         var initializedCount = 0;
         var newLargeInfowindow;
@@ -206,7 +241,7 @@
       document.getElementById('show-listings').addEventListener('click', showListings);
       document.getElementById('hide-listings').addEventListener('click', hideListings);
 
-    }
+    //}
 
     // This function populates the infowindow when the marker is clicked. We'll only allow
     // one infowindow which will open at the marker that is clicked, and populate based
