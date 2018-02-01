@@ -97,13 +97,13 @@
     var locations = [];
     var largeInfowindow;
 
-    function Marker(name, location, latitude, longitude, message, imageURL){
-        this.name = name;
-        this.location = location;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.message = message;
-        this.imageURL = imageURL;
+    function Marker(name, location, latitude, longitude, message, imageURL) {
+      this.name = name;
+      this.location = location;
+      this.latitude = latitude;
+      this.longitude = longitude;
+      this.message = message;
+      this.imageURL = imageURL;
     }
 
     function initMap() {
@@ -114,134 +114,144 @@
         mapTypeControl: false
       });
 
-      // These are the real estate listings that will be shown to the user.
-      // Normally we'd have these in a database instead.
-      /*var locations = [
-        { title: 'Park Ave Penthouse', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7713024, lng: -73.9632393 } },
-        { title: 'Chelsea Loft', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7444883, lng: -73.9949465 } },
-        { title: 'Union Square Open Floor Plan', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7347062, lng: -73.9895759 } },
-        { title: 'East Village Hip Studio', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7281777, lng: -73.984377 } },
-        { title: 'TriBeCa Artsy Bachelor Pad', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7195264, lng: -74.0089934 } },
-        { title: 'Chinatown Homey Space', message: 'Park Ave Penthouse', image: 'Park Ave Penthouse', location: { lat: 40.7180628, lng: -73.9961237 } }
-      ];*/
-
       largeInfowindow = new google.maps.InfoWindow();
-        
-        // Get a reference to the database service
-        var database = firebase.database();
-        
-        // Get reference to 'markers' branch of database
-        var markerRef = database.ref('markers');
-        // Listener on markers branch
-        markerRef.on('value', function(snapshot) {
-          var i = 0;
-          snapshot.forEach(function(childSnapshot){
-              // Read each child
-              var name = childSnapshot.val().name;
-              var location = childSnapshot.val().location;
-              var latitude = childSnapshot.val().latitude;
-              var longitude = childSnapshot.val().longitude;
-              var message = childSnapshot.val().message;
-              var imageURL = childSnapshot.val().imageURL;
-              // Create new marker object
-              var marker = new Marker(name, location, latitude, longitude, message, imageURL);
-              console.log(marker);
-             
-              // If this marker isn't already in the locations array, add it
-              if (!locations.includes(marker)){
-                  locations.push(marker);
-                  
-                  // Drop a pin
-                  var marker = new google.maps.Marker({
-                      position: {lat: latitude, lng: longitude},
-                      title: name,
-                      animation: google.maps.Animation.DROP,
-                      id: i
-                  });
-                  // Save the marker
-                  markers.push(marker);
-                  i++;
-                      
-                  // Create an onclick event to open an infowindow at each marker.
-                  marker.addListener('click', function () {
-                    populateInfoWindow(this, largeInfowindow);
-                  });
-              }
-          });
+
+      // Get a reference to the database service
+      var database = firebase.database();
+
+      // Get reference to 'markers' branch of database
+      var markerRef = database.ref('markers');
+      // Listener on markers branch
+      markerRef.on('value', function (snapshot) {
+        var i = 0;
+        snapshot.forEach(function (childSnapshot) {
+          // Read each child
+          var name = childSnapshot.val().name;
+          var location = childSnapshot.val().location;
+          var latitude = childSnapshot.val().latitude;
+          var longitude = childSnapshot.val().longitude;
+          var message = childSnapshot.val().message;
+          var imageURL = childSnapshot.val().imageURL;
+          // Create new marker object
+          var marker = new Marker(name, location, latitude, longitude, message, imageURL);
+          console.log(marker);
+
+          // If this marker isn't already in the locations array, add it
+          if (!locations.includes(marker)) {
+            locations.push(marker);
+
+            // Drop a pin
+            var marker = new google.maps.Marker({
+              position: { lat: latitude, lng: longitude },
+              title: name,
+              animation: google.maps.Animation.DROP,
+              id: i
+            });
+            // Save the marker
+            markers.push(marker);
+            i++;
+
+            // Create an onclick event to open an infowindow at each marker.
+            marker.addListener('click', function () {
+              populateInfoWindow(this, largeInfowindow);
+            });
+          }
         });
+      });
 
       //function to add NEW marker on left click
       google.maps.event.addListener(map, 'click', function (event) {
         placeMarker(event.latLng);
       });
+
     }
-      
-      function placeMarker(location) {
-        var marker = new google.maps.Marker({
-          position: location,
-          animation: google.maps.Animation.DROP,
-          map: map,
-        });
-        var initializedCount = 0;
-        var newLargeInfowindow;
 
-        console.log('placeMarker ran :) ');
-
-        marker.addListener('click', function () {
-          console.log('initializedCount within listener for new marker being clicked ', initializedCount);
-          if (initializedCount == 0) {
-            populateNewInfoWindow(this, largeInfowindow);
-            console.log('ran populateNewInfoWindow() ');
+    //ZL: This is where the html buttons are told what JS functions to run when 'clicked'
+    document.getElementById('show-listings').addEventListener('click', showListings);
+    document.getElementById('hide-listings').addEventListener('click', hideListings);
 
 
-            //ZL: Needs to be here so that Submit buttton works
-            document.getElementById('infowindowSubmit').addEventListener('click', function (event) {
-              // This function saves the newly created marker and the infowindow information when
-              //the 'Submit' button is clicked.
-              //ZL: Currently adds marker to 'locations' array. Will need to connect to database upon launch
 
-              //Variables that store data inputted in infowindow
-              var postName = document.getElementById('formName');
-              var postMessage = document.getElementById('formMessage');
-              var postImage = document.getElementById('fileInput');
+    // ---------- FUNCTIONS ---------- //
+    function placeMarker(location) {
+      var marker = new google.maps.Marker({
+        position: location,
+        animation: google.maps.Animation.DROP,
+        map: map,
+      });
+      var initializedCount = 0;
+      var newLargeInfowindow;
 
-              //Closes markers open infowindow
-              largeInfowindow.close(map, marker);
-              //Sets markers infowindow to NEW content
-              largeInfowindow.setContent('<div>' + '<div>Name: ' + postName.value + '</div><br>' + '<div>Message: ' + postMessage.value + '</div><br>' + '<div>Image: ' + postMessage.value + '</div><br>' + '</div>');
-              largeInfowindow.open(map, marker);
-              // Make sure the marker property is cleared if the infowindow is closed.
-              largeInfowindow.addListener('closeclick', function () {
-                largeInfowindow.marker = null;
-              });
+      console.log('placeMarker ran :) ');
 
-              console.log('largeInfowindow after new content is set ', largeInfowindow);
-              newLargeInfowindow = largeInfowindow;
-              console.log('newLargeInfowindow after made equal to largeInfoWindow ', newLargeInfowindow);
+      marker.addListener('click', function () {
+        console.log('initializedCount within listener for new marker being clicked ', initializedCount);
+        if (initializedCount == 0) {
+          populateNewInfoWindow(this, largeInfowindow);
+          console.log('ran populateNewInfoWindow() ');
 
-              // Push the marker to our array of markers.
-              console.log('actual marker ', marker, ' AND markers array before new marker is pushed ', markers);
-              markers.push(marker);
-              console.log('markers 2 ', markers);
+          //ZL: Needs to be here so that Submit buttton works
+          document.getElementById('infowindowSubmit').addEventListener('click', function (event) {
+            // This function saves the newly created marker and the infowindow information when
+            //the 'Submit' button is clicked.
+            //ZL: Currently adds marker to 'locations' array. Will need to connect to database upon launch
 
-              initializedCount = 1;
+            //Variables that store data inputted in infowindow
+            var postName = document.getElementById('formName');
+            var postNameF = postName.value;
+
+            var postMessage = document.getElementById('formMessage');
+            var postMessageF = postMessage.value;
+
+            var postImage = document.getElementById('fileInput');
+            var postImageF = postImage.value;
+
+            //Closes markers open infowindow
+            largeInfowindow.close(map, marker);
+            //Sets markers infowindow to NEW content
+            largeInfowindow.setContent('<div>' + '<div>Name: ' + postNameF + '</div><br>' + '<div>Message: ' + postMessageF + '</div><br>' + '<div>Image: ' + postMessageF + '</div><br>' + '</div>');
+            largeInfowindow.open(map, marker);
+            // Make sure the marker property is cleared if the infowindow is closed.
+            largeInfowindow.addListener('closeclick', function () {
+              largeInfowindow.marker = null;
             });
 
-          } else if (initializedCount == 1) {
-            console.log('NLIW after being clicked again ', newLargeInfowindow);
-            populateFinalInfoWindow(this, newLargeInfowindow);
-          } else {
-            populateFinalInfoWindow(this, newLargeInfowindow);
-          }
+            console.log('largeInfowindow after new content is set ', largeInfowindow);
+            newLargeInfowindow = largeInfowindow;
+            console.log('newLargeInfowindow after made equal to largeInfoWindow ', newLargeInfowindow);
 
-        });
-      }
+            // Push the marker to our array of markers.
+            console.log('actual marker ', marker, ' AND markers array before new marker is pushed ', markers);
+            markers.push(marker);
+            console.log('markers 2 ', markers);
 
-      //ZL: This is where the html buttons are told what JS functions to run when 'clicked'
-      document.getElementById('show-listings').addEventListener('click', showListings);
-      document.getElementById('hide-listings').addEventListener('click', hideListings);
+            //ZL: Code to write markers array to database
+            writeUserData(postNameF, location, latitude, longitude, postMessageF, PostImageF);
 
-    //}
+            initializedCount = 1;
+          });
+
+        } else if (initializedCount == 1) {
+          console.log('NLIW after being clicked again ', newLargeInfowindow);
+          populateFinalInfoWindow(this, newLargeInfowindow);
+        } else {
+          populateFinalInfoWindow(this, newLargeInfowindow);
+        }
+
+      });
+    }
+
+    // Writes data to firebase
+    function writeUserData(name, location, latitude, longitude, message, imageURL) {
+      firebase.database().ref('markers').set({
+        name: postNameF,
+        location: location,
+        latitude: latitude,
+        longitude: longitude,
+        message: postMessageF,
+        imageURL: postImageF
+      });
+    }
 
     // This function populates the infowindow when the marker is clicked. We'll only allow
     // one infowindow which will open at the marker that is clicked, and populate based
