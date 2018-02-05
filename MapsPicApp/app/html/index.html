@@ -206,6 +206,10 @@
             var postImage = document.getElementById('fileInput');
             var postImageF = postImage.value;
 
+            var latitude = location.lat(location);
+
+            var longitude = location.lng(location);
+
             //Closes markers open infowindow
             largeInfowindow.close(map, marker);
             //Sets markers infowindow to NEW content
@@ -225,8 +229,14 @@
             markers.push(marker);
             console.log('markers 2 ', markers);
 
+            console.log('postNameF ', postNameF);
+            console.log('location ', location);
+            console.log('latitude ', latitude);
+            console.log('longitude ', longitude);
+            console.log('postMessageF ', postMessageF);
+            console.log('PostImageF ', postImageF);
             //ZL: Code to write markers array to database
-            writeUserData(postNameF, location, latitude, longitude, postMessageF, PostImageF);
+            writeUserData(postNameF, location, latitude, longitude, postMessageF, postImageF);
 
             initializedCount = 1;
           });
@@ -244,12 +254,12 @@
     // Writes data to firebase
     function writeUserData(name, location, latitude, longitude, message, imageURL) {
       firebase.database().ref('markers').set({
-        name: postNameF,
+        name: name,
         location: location,
         latitude: latitude,
         longitude: longitude,
-        message: postMessageF,
-        imageURL: postImageF
+        message: message,
+        imageURL: imageURL
       });
     }
 
