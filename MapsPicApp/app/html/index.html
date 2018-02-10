@@ -53,13 +53,42 @@
       text-align: left;
       width: 100%;
     }
+
+    .Row
+{
+    display: table;
+    width: 100%; /*Optional*/
+    table-layout: fixed; /*Optional*/
+    border-spacing: 10px; /*Optional*/
+}
+.Column
+{
+    display: table-cell;
+    background-color: grey; /*Optional*/
+}
   </style>
 </head>
 
 
 <body>
   <div class="container">
-    <h1>Show Location of Pictures</h1>
+    <br>
+    <div class="Row">
+        <div class="Column"><img src="/Users/zl10/Documents/Code/MapsPicApp/MapsPicApp/app/html" alt="Mountain View">
+        </div>
+        <div class="Column"><div>Red Band Brigade</div><div>Description:</div></div>
+        <div class="Column">
+          <div>Login and Signup</div>
+          <div>
+              <input type="text" name="Email" value="Email">
+              <br> 
+              <input type="text" name="Password" value="Password">
+              <br>
+                  <input type="submit" value="Login">
+                  <input type="submit" value="Sign up">
+          </div>
+        </div>
+    </div>
     <div>
       <input id="show-listings" type="button" value="Show Listings">
       <input id="hide-listings" type="button" value="Hide Listings">
@@ -67,7 +96,6 @@
     <p>
       To post, just click the map and upload your photo and message. Click on pins to see others posts
     </p>
-    [search bar here if time]
   </div>
   <div id="map"></div>
 
@@ -134,7 +162,7 @@
           var imageURL = childSnapshot.val().imageURL;
           // Create new marker object
           var marker = new Marker(name, location, latitude, longitude, message, imageURL);
-          console.log(marker);
+          console.log('Marker: ', marker);
 
           // If this marker isn't already in the locations array, add it
           if (!locations.includes(marker)) {
@@ -199,15 +227,12 @@
             //Variables that store data inputted in infowindow
             var postName = document.getElementById('formName');
             var postNameF = postName.value;
-
             var postMessage = document.getElementById('formMessage');
             var postMessageF = postMessage.value;
-
+            //postImage is set to message content for now for testing purposes. Please change later VVV
             var postImage = document.getElementById('fileInput');
             var postImageF = postImage.value;
-
             var latitude = location.lat(location);
-
             var longitude = location.lng(location);
 
             //Closes markers open infowindow
@@ -236,7 +261,8 @@
             console.log('postMessageF ', postMessageF);
             console.log('PostImageF ', postImageF);
             //ZL: Code to write markers array to database
-            writeUserData(postNameF, location, latitude, longitude, postMessageF, postImageF);
+            writeUserData(postNameF, 'nun', latitude, longitude, postMessageF, postImageF);
+            console.log('pushed new marker to database');
 
             initializedCount = 1;
           });
@@ -253,7 +279,7 @@
 
     // Writes data to firebase
     function writeUserData(name, location, latitude, longitude, message, imageURL) {
-      firebase.database().ref('markers').set({
+      firebase.database().ref('markers/markerID').push({
         name: name,
         location: location,
         latitude: latitude,
