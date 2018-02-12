@@ -172,6 +172,7 @@
             var marker = new google.maps.Marker({
               position: { lat: latitude, lng: longitude },
               title: name,
+                // TODO: add message and imageURL here!!
               animation: google.maps.Animation.DROP,
               id: i
             });
@@ -279,7 +280,7 @@
 
     // Writes data to firebase
     function writeUserData(name, location, latitude, longitude, message, imageURL) {
-      firebase.database().ref('markers/markerID').push({
+      firebase.database().ref('markers').push({
         name: name,
         location: location,
         latitude: latitude,
