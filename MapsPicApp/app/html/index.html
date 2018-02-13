@@ -55,18 +55,21 @@
       width: 100%;
     }
 
-    .Row
-{
-    display: table;
-    width: 100%; /*Optional*/
-    table-layout: fixed; /*Optional*/
-    border-spacing: 10px; /*Optional*/
-}
-.Column
-{
-    display: table-cell;
-    background-color: grey; /*Optional*/
-}
+    .Row {
+      display: table;
+      width: 100%;
+      /*Optional*/
+      table-layout: fixed;
+      /*Optional*/
+      border-spacing: 10px;
+      /*Optional*/
+    }
+
+    .Column {
+      display: table-cell;
+      background-color: grey;
+      /*Optional*/
+    }
   </style>
 </head>
 
@@ -75,20 +78,24 @@
   <div class="container">
     <br>
     <div class="Row">
-        <div class="Column"><img src="/Users/zl10/Documents/Code/MapsPicApp/MapsPicApp/app/html" alt="Mountain View">
+      <div class="Column">
+        <img src="/Users/zl10/Documents/Code/MapsPicApp/MapsPicApp/app/html" alt="Mountain View">
+      </div>
+      <div class="Column">
+        <div>Red Band Brigade</div>
+        <div>Description:</div>
+      </div>
+      <div class="Column">
+        <div>Login and Signup</div>
+        <div>
+          <input type="text" name="Email" value="Email">
+          <br>
+          <input type="text" name="Password" value="Password">
+          <br>
+          <input id="signupbutton" type="submit" value="Sign Up">
+          <input id="loginbutton" type="submit" value="Login">
         </div>
-        <div class="Column"><div>Red Band Brigade</div><div>Description:</div></div>
-        <div class="Column">
-          <div>Login and Signup</div>
-          <div>
-              <input type="text" name="Email" value="Email">
-              <br> 
-              <input type="text" name="Password" value="Password">
-              <br>
-                  <input type="submit" value="Login">
-                  <input type="submit" value="Sign up">
-          </div>
-        </div>
+      </div>
     </div>
     <div>
       <input id="show-listings" type="button" value="Show Listings">
@@ -174,8 +181,7 @@
             var marker = new google.maps.Marker({
               position: { lat: latitude, lng: longitude },
               title: name,
-              message: message,  
-                // TODO: add message and imageURL here!!
+              message: message,
               animation: google.maps.Animation.DROP,
               id: i
             });
@@ -201,10 +207,30 @@
     //ZL: This is where the html buttons are told what JS functions to run when 'clicked'
     document.getElementById('show-listings').addEventListener('click', showListings);
     document.getElementById('hide-listings').addEventListener('click', hideListings);
+    document.getElementById('signupbutton').addEventListener('click', signupUser);
+    document.getElementById('loginbutton').addEventListener('click', loginUser);
 
 
 
     // ---------- FUNCTIONS ---------- //
+    function signupUser() {
+      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+      });
+    };
+
+    function loginUser() {
+      firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+      });
+    };
+
     function placeMarker(location) {
       var marker = new google.maps.Marker({
         position: location,
