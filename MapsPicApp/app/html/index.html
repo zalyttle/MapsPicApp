@@ -9,6 +9,7 @@
       height: 100%;
       margin: 0;
       padding: 0;
+      background-color: grey;
     }
 
     .container {
@@ -163,6 +164,7 @@
           // Create new marker object
           var marker = new Marker(name, location, latitude, longitude, message, imageURL);
           console.log('Marker: ', marker);
+          console.log('messageeeeeeee', message);
 
           // If this marker isn't already in the locations array, add it
           if (!locations.includes(marker)) {
@@ -172,6 +174,7 @@
             var marker = new google.maps.Marker({
               position: { lat: latitude, lng: longitude },
               title: name,
+              message: message,  
                 // TODO: add message and imageURL here!!
               animation: google.maps.Animation.DROP,
               id: i
@@ -297,7 +300,7 @@
       // Check to make sure the infowindow is not already opened on this marker.
       if (infowindow.marker != marker) {
         infowindow.marker = marker;
-        infowindow.setContent('<div>' + '<div>Name: ' + marker.title + '</div><br>' + '<div>Message: ' + postMessage.value + '</div><br>' + '<div>Image: ' + postMessage.value + '</div><br>' + '</div>');
+        infowindow.setContent('<div>' + '<div>Name: ' + marker.title + '</div><br>' + '<div>Message: ' + marker.message + '</div><br>' + '<div>Image: ' + marker.message + '</div><br>' + '</div>');
         infowindow.open(map, marker);
         // Make sure the marker property is cleared if the infowindow is closed.
         infowindow.addListener('closeclick', function () {
